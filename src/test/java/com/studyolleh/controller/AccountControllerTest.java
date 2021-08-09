@@ -2,6 +2,7 @@ package com.studyolleh.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -26,6 +27,7 @@ class AccountControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(view().name("account/sign-up"))
 			.andDo(print())
+			.andExpect(model().attributeExists("signUpForm"))
 			;
 	}
 
