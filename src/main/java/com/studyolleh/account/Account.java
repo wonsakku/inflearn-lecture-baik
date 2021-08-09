@@ -1,4 +1,4 @@
-package com.studyolleh.domain;
+package com.studyolleh.account;
 
 import java.time.LocalDateTime;
 
