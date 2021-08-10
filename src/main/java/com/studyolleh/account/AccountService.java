@@ -1,5 +1,6 @@
 package com.studyolleh.account;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.mail.SimpleMailMessage;
@@ -17,6 +18,7 @@ public class AccountService {
 	private final JavaMailSender javaMailSender;
 	private final PasswordEncoder passwordEncoder;
 
+	@Transactional
 	public void processNewAccount(@Valid SignUpForm signUpForm) {
 		Account newAccount = saveNewAccount(signUpForm);
 		newAccount.generateEmailCheckToken();
