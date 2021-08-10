@@ -1,4 +1,4 @@
-package com.studyolleh;
+package com.studyolleh.mail;
 
 import java.io.InputStream;
 
