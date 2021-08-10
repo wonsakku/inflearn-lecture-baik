@@ -35,7 +35,7 @@ public class Account {
 	@Column(unique = true)
 	private String nickname;
 	private String password;
-	private String emailVerified;
+	private boolean emailVerified;
 	private String emailCheckToken;
 	private LocalDateTime joinedAt;
 	private String bio;
