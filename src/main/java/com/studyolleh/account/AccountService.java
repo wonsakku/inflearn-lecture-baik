@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ public class AccountService {
 
 	private final AccountRepository accountRepository;
 	private final JavaMailSender javaMailSender;
+	private final PasswordEncoder passwordEncoder;
 
 	public void processNewAccount(@Valid SignUpForm signUpForm) {
 		Account newAccount = saveNewAccount(signUpForm);
@@ -26,11 +28,12 @@ public class AccountService {
 		Account account = Account.builder()
 							.email(signUpForm.getEmail())
 							.nickname(signUpForm.getNickname())
-							.password(signUpForm.getPassword()) // TODO encoding 
+							.password(passwordEncoder.encode(signUpForm.getPassword()))  
 							.studyCreatedByWeb(true)
 							.studyEnrollmentResultByWeb(true)
 							.studyUpdatedByWeb(true)
 							.build();
+		
 		
 		Account newAccount = accountRepository.save(account);
 		return newAccount;
