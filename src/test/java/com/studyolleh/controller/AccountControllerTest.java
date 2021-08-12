@@ -21,11 +21,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import javax.transaction.Transactional;
+
 import com.studyolleh.account.Account;
 import com.studyolleh.account.AccountRepository;
 
 
-
+@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
 class AccountControllerTest {
@@ -35,6 +37,47 @@ class AccountControllerTest {
 	
 	@MockBean // 외부 연동은 mocking으로 테스트
 	JavaMailSender javaMailSender;
+	
+	
+	@DisplayName("인증 메일 확인 - 입력값 오류")
+	@Test
+	void checkEmailToken_with_wrong_input() throws Exception{
+		mockMvc.perform(get("/check-email-token")
+					.param("token", "sadfsldkj")
+					.param("email", "sakku@email.com")
+				)
+		.andExpect(status().isOk())
+		.andExpect(model().attributeExists("error"))
+		.andExpect(view().name("account/checked-email"))
+		;
+	}
+	
+	
+	@DisplayName("인증 메일 확인 - 입력값 정상")
+	@Test
+	void checkEmailToken() throws Exception{
+		
+		Account account = Account.builder()
+				.email("test@email.com")
+				.password("12345678")
+				.nickname("sakku")
+				.build();
+		
+		Account newAccount = accountRepository.save(account);
+		newAccount.generateEmailCheckToken(); // test 클래스명 위에 Transactional 추가
+		
+		
+		mockMvc.perform(get("/check-email-token")
+				.param("token", newAccount.getEmailCheckToken())
+				.param("email", newAccount.getEmail())
+				)
+		.andExpect(status().isOk())
+		.andExpect(model().attributeDoesNotExist("error"))
+		.andExpect(model().attributeExists("nickname"))
+		.andExpect(model().attributeExists("numberOfUser"))
+		.andExpect(view().name("account/checked-email"))
+		;
+	}
 	
 	
 	@DisplayName("회원 가입 화면 보이는지 테스트")

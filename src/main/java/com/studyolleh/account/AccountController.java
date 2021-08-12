@@ -1,4 +1,4 @@
-package com.studyolleh.controller;
+package com.studyolleh.account;
 
 import java.time.LocalDateTime;
 
@@ -13,12 +13,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import com.studyolleh.account.Account;
-import com.studyolleh.account.AccountRepository;
-import com.studyolleh.account.AccountService;
-import com.studyolleh.account.SignUpForm;
-import com.studyolleh.account.SignUpFormValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -70,8 +64,8 @@ public class AccountController {
 			return view;
 		}
 		
-		account.setEmailVerified(true);
-		account.setJoinedAt(LocalDateTime.now());
+		
+		account.completeSignUp();
 		model.addAttribute("numberOfUser", accountRepository.count());
 		model.addAttribute("nickname", account.getNickname());
 		
