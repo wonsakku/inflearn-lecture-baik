@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -43,12 +45,14 @@ class AccountControllerTest {
 	@Test
 	void checkEmailToken_with_wrong_input() throws Exception{
 		mockMvc.perform(get("/check-email-token")
+				.param("nickname", "sakku")
 					.param("token", "sadfsldkj")
 					.param("email", "sakku@email.com")
 				)
 		.andExpect(status().isOk())
 		.andExpect(model().attributeExists("error"))
 		.andExpect(view().name("account/checked-email"))
+		.andExpect(unauthenticated())
 		;
 	}
 	
@@ -70,12 +74,14 @@ class AccountControllerTest {
 		mockMvc.perform(get("/check-email-token")
 				.param("token", newAccount.getEmailCheckToken())
 				.param("email", newAccount.getEmail())
+//				.with(csrf())
 				)
 		.andExpect(status().isOk())
 		.andExpect(model().attributeDoesNotExist("error"))
 		.andExpect(model().attributeExists("nickname"))
 		.andExpect(model().attributeExists("numberOfUser"))
 		.andExpect(view().name("account/checked-email"))
+		.andExpect(authenticated().withUsername("sakku"))
 		;
 	}
 	
@@ -88,6 +94,8 @@ class AccountControllerTest {
 			.andExpect(view().name("account/sign-up"))
 			.andDo(print())
 			.andExpect(model().attributeExists("signUpForm"))
+			.andExpect(unauthenticated())
+			.andExpect(unauthenticated())
 			;
 	}
 
@@ -103,7 +111,7 @@ class AccountControllerTest {
 					)
 			.andExpect(status().isOk())
 			.andExpect(view().name("account/sign-up"))
-		
+			.andExpect(unauthenticated())
 		;
 		
 	}
@@ -117,7 +125,10 @@ class AccountControllerTest {
                 .param("password", "12345678")
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
+                .andExpect(authenticated())
+                .andExpect(view().name("redirect:/"))
+                .andExpect(authenticated().withUsername("sakku"))
+                ;
 
         Account account =accountRepository.findByEmail("sakku@email.com");
 //        assertThat(account.getPassword()).isNotEqualTo("12345678");
