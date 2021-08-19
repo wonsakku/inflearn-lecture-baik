@@ -89,8 +89,9 @@ public class AccountController {
         }
 
         accountService.sendSignUpConfirmEmail(account);
-        return "redirect:/";
+        return "redirect:/"; // refresh할 때 토큰 전송이 계속 일어나지 않게 하기 위해
     }
+
 }
 
 
